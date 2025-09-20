@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Family Get-Together Invitation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: linear-gradient(to right, #ffe259, #ffa751);
+      color: #333;
+      text-align: center;
+    }
+    header {
+      background: #ff7043;
+      color: white;
+      padding: 2rem 1rem;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+    }
+    section {
+      padding: 2rem;
+      max-width: 900px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.9);
+      margin-top: 1rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    h2 {
+      color: #e64a19;
+    }
+    .menu-list, .program-list {
+      text-align: left;
+      display: inline-block;
+      margin: 1rem auto;
+    }
+    .poll button {
+      background: #ff7043;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .poll button:hover {
+      background: #e64a19;
+    }
+    .results {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    .admin-login, .admin-panel {
+      display: none;
+      margin-top: 2rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    table, th, td {
+      border: 1px solid #aaa;
+      padding: 8px;
+    }
+    th {
+      background: #ffccbc;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🌸 Family Get-Together Invitation 🌸</h1>
+    <p>Heirs & Heiresses of Mallaiah and Eshawaramma</p>
+  </header>
+
+  <section>
+    <h2>📍 Venue</h2>
+    <p>Mamidi Thota of Parameshawar Thata,<br>Sirsinagandla, Kondapaka Mandal, Siddipet</p>
+    <iframe 
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3806.799073711713!2d78.568056!3d17.385044!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb9d6d7d7d!2sSiddipet!5e0!3m2!1sen!2sin!4v1234567890"
+      width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+  </section>
+
+  <section>
+    <h2>🗓️ Date & Time</h2>
+    <p><strong>Sunday, 5th October 2025</strong><br>From 7:00 AM to 7:00 PM</p>
+  </section>
+
+  <section>
+    <h2>🎉 Program Highlights</h2>
+    <ul class="program-list">
+      <li>Funny Games</li>
+      <li>Family Games</li>
+      <li>Dance & Singing Entertainment</li>
+      <li>Tambola Game</li>
+      <li>DJ Dance</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>🍴 Menu</h2>
+    <p><strong>Tiffin:</strong> Idly, Vada, Bonda</p>
+    <p><strong>Lunch:</strong> White Rice, Palakura Pappu, Sambar, Chutney, Curd</p>
+    <p><strong>Evening Snacks:</strong> Pani Puri, Premnagar Puri</p>
+    <p><strong>Dinner:</strong> Full Traditional Spread</p>
+  </section>
+
+  <section>
+    <h2>💰 Contribution</h2>
+    <p>Each family contributes: <strong>₹1000</strong></p>
+    <p>Payment can be made at venue.</p>
+  </section>
+
+  <section class="poll">
+    <h2>🗳️ RSVP Polling Booth</h2>
+    <input type="text" id="guestName" placeholder="Enter your name (optional)" />
+    <br><br>
+    <button onclick="submitVote('Yes')">✅ Interested</button>
+    <button onclick="submitVote('No')">❌ Not Interested</button>
+    <div class="results" id="results"></div>
+  </section>
+
+  <section>
+    <h2>👨‍👩‍👦 Hosts</h2>
+    <p>Vishweshwar, Mahendar, Venkatesham, Suresh</p>
+    <h3>📞 Contact</h3>
+    <p>1111111111, 2222222222, 3333333333, 4444444444</p>
+  </section>
+
+  <section>
+    <h2>🔑 Admin Login</h2>
+    <input type="password" id="adminPass" placeholder="Enter password" />
+    <button onclick="loginAdmin()">Login</button>
+    <div class="admin-login" id="adminPanel">
+      <h3>RSVP List</h3>
+      <table id="votesTable">
+        <tr><th>Name</th><th>Choice</th><th>Time</th></tr>
+      </table>
+      <button onclick="exportCSV()">⬇️ Export CSV</button>
+    </div>
+  </section>
+
+  <script>
+    async function submitVote(choice) {
+      const name = document.getElementById('guestName').value;
+      const res = await fetch('/api/vote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, choice })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('Thank you for your response!');
+        loadResults();
+      }
+    }
+
+    async function loadResults() {
+      const res = await fetch('/api/results');
+      const data = await res.json();
+      document.getElementById('results').innerText =
+        `✅ Yes: ${data.Yes} | ❌ No: ${data.No}`;
+    }
+
+    async function loginAdmin() {
+      const pass = document.getElementById('adminPass').value;
+      if (pass === 'admin123') {
+        document.getElementById('adminPanel').style.display = 'block';
+        loadVotes();
+      } else {
+        alert('Wrong password!');
+      }
+    }
+
+    async function loadVotes() {
+      const res = await fetch('/api/votes');
+      const data = await res.json();
+      const table = document.getElementById('votesTable');
+      table.innerHTML = '<tr><th>Name</th><th>Choice</th><th>Time</th></tr>';
+      data.forEach(v => {
+        const row = `<tr><td>${v.name}</td><td>${v.choice}</td><td>${new Date(v.createdAt).toLocaleString()}</td></tr>`;
+        table.innerHTML += row;
+      });
+    }
+
+    function exportCSV() {
+      let csv = "Name,Choice,Time\n";
+      const rows = document.querySelectorAll("#votesTable tr");
+      rows.forEach((row, i) => {
+        if (i === 0) return;
+        const cols = row.querySelectorAll("td");
+        csv += `${cols[0].innerText},${cols[1].innerText},${cols[2].innerText}\n`;
+      });
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "rsvp.csv";
+      a.click();
+    }
+
+    loadResults();
+  </script>
+</body>
+</html>
